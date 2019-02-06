@@ -1,7 +1,7 @@
 /*
  * Shamir Secret Sharing Scheme implementation on prime field 65521.
  *
- * (c) 2018 Sebastiaan Groot <sebastiaang@kpn-cert.nl>
+ * (c) 2019 Sebastiaan Groot <sebastiaang@kpn-cert.nl>
  *
  * The prime (p) chosen for SSSS is fairly arbitrary, but we want it to have the following properties:
  *   p > N, where N is the largest value in your input (secret) domain. Since we want to create secret shares
@@ -24,6 +24,8 @@
 
 #ifdef USE_OPENSSL
 #include <openssl/rand.h>
+#elif USE_SODIUM
+#include <sodium.h>
 #else
 #include <time.h>
 #endif
@@ -61,6 +63,12 @@ void init_random()
     {
       bytes_wanted -= r;
     }
+  }
+#elif USE_SODIUM
+  if (sodium_init() < 0)
+  {
+    fprintf(stderr, "unable to initialize libsodium. aborting!\n");
+    exit(EXIT_FAILURE);
   }
 #else
   #pragma message ("Using rand() and srand(time(NULL)), to be used for testing purposes only!")
@@ -111,6 +119,14 @@ int64_t get_random(int64_t min, int64_t max)
     bytes_wanted = 8;
   }
   return (rand % (max - min)) + min;
+#elif USE_SODIUM
+  if (min != 0 || max > UINT32_MAX)
+  {
+    fprintf(stderr, "libsodium random currently only supports uniform random using 32-bit integer types\n");
+    exit(EXIT_FAILURE);
+  }
+
+  return (int64_t) randombytes_uniform((uint32_t) max);
 #else
   return (rand() % (max - min)) + min;
 #endif

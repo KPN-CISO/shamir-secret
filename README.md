@@ -5,7 +5,7 @@ A set of commandline tools for creating and recovering Shamir Secret Shares.
 * bash 2.04+ (helper scripts)
 * GNU coreutils (helper scripts)
 * Make (build process)
-* OpenSSL library 0.9.5+ (libcrypto) (CPRNG)
+* OpenSSL library 0.9.5+ (libcrypto) (CPRNG) or libsodium 
 * C99-compatible C compiler
 * (optional) /dev/random and /dev/urandom to seed OpenSSL's PRNG
 

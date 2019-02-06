@@ -14,7 +14,7 @@ RECOVER_BIN = recover_shares
 all: secure
 
 # non-blocking, OpenSSL libcrypto statically linked, still requires libdl & pthread dynamically
-static: LFLAGS += -Wl,-Bstatic -lcrypto -Wl,-Bdynamic -l:libdl.so -lpthread
+static: LFLAGS += -Wl,-Bstatic -lsodium -Wl,-Bdynamic -l:libdl.so -lpthread
 static: create_secure recover_secure
 
 # blocking, OpenSSL libcrypto statically linked, still requires libdl & pthread dynamically
@@ -22,7 +22,7 @@ static_blocking: LFLAGS += -Wl,-Bstatic -lcrypto -Wl,-Bdynamic -l:libdl.so -lpth
 static_blocking: create_blocking recover_blocking
 
 # non-blocking, libcrypto dynamically linked
-secure: LFLAGS += -lcrypto
+secure: LFLAGS += -lsodium
 secure: create_secure recover_secure
 
 # blocking, libcrypto dynamically linked
@@ -39,10 +39,10 @@ recover:
 	$(CC) $(RECOVER_SRC) $(SRC) $(CFLAGS) -o $(RECOVER_BIN)
 
 create_secure:
-	$(CC) $(CREATE_SRC) $(SRC) $(CFLAGS) -DUSE_OPENSSL -o $(CREATE_BIN) $(LFLAGS)
+	$(CC) $(CREATE_SRC) $(SRC) $(CFLAGS) -DUSE_SODIUM -o $(CREATE_BIN) $(LFLAGS)
 
 recover_secure:
-	$(CC) $(RECOVER_SRC) $(SRC) $(CFLAGS) -DUSE_OPENSSL -o $(RECOVER_BIN) $(LFLAGS)
+	$(CC) $(RECOVER_SRC) $(SRC) $(CFLAGS) -DUSE_SODIUM -o $(RECOVER_BIN) $(LFLAGS)
 
 create_blocking:
 	$(CC) $(CREATE_SRC) $(SRC) $(CFLAGS) -DUSE_OPENSSL -DUSE_BLOCKING -o $(CREATE_BIN) $(LFLAGS)
