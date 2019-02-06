@@ -87,14 +87,14 @@ An implementation on GF\_256 would allow the entire 1-byte input-domain without 
 
 ### build options
 ```sh
-# default, non-blocking, OpenSSL libcrypto dynamically linked
+# default, non-blocking, libsodium dynamically linked
 $ make
 $ make secure
 
 # blocking, OpenSSL libcrypto dynamically linked
 $ make blocking
 
-# non-blocking, OpenSSL libcrypto statically linked
+# non-blocking, libsodium statically linked
 $ make static
 
 # blocking, OpenSSL libcrypto statically linked
