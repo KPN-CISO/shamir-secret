@@ -22,9 +22,9 @@
 #include <string.h>
 #include <inttypes.h>
 
-#ifdef USE_OPENSSL
+#if defined USE_OPENSSL
 #include <openssl/rand.h>
-#elif USE_SODIUM
+#elif defined USE_SODIUM
 #include <sodium.h>
 #else
 #include <time.h>
@@ -47,13 +47,13 @@ static void secure_memzero(void *p, size_t len)
   (memset_ptr)(p, 0, len);
 }
 
-void init_random()
+void init_random(void)
 {
-#ifdef USE_OPENSSL
+#if defined USE_OPENSSL
   // small initial seed
   int r;
   int bytes_wanted = 32;
-#ifdef USE_BLOCKING
+#if defined USE_BLOCKING
   while ((r = RAND_load_file("/dev/random", bytes_wanted)) < bytes_wanted)
 #else
   while ((r = RAND_load_file("/dev/urandom", bytes_wanted)) < bytes_wanted)
@@ -64,7 +64,7 @@ void init_random()
       bytes_wanted -= r;
     }
   }
-#elif USE_SODIUM
+#elif defined USE_SODIUM
   if (sodium_init() < 0)
   {
     fprintf(stderr, "unable to initialize libsodium. aborting!\n");
@@ -79,7 +79,7 @@ void init_random()
 
 int64_t get_random(int64_t min, int64_t max)
 {
-#ifdef USE_OPENSSL
+#if defined USE_OPENSSL
   // ask /dev/random for the number of bits of entropy that we want to extract at most (64 bits, or 8 bytes)
   int r;
   int bytes_wanted = 8;
@@ -94,7 +94,7 @@ int64_t get_random(int64_t min, int64_t max)
   while (1)
   {
     // add 8 bytes of entropy to the pool
-#ifdef USE_BLOCKING
+#if defined USE_BLOCKING
     r = RAND_load_file("/dev/random", bytes_wanted);
 #else
     r = RAND_load_file("/dev/urandom", bytes_wanted);
@@ -119,7 +119,7 @@ int64_t get_random(int64_t min, int64_t max)
     bytes_wanted = 8;
   }
   return (rand % (max - min)) + min;
-#elif USE_SODIUM
+#elif defined USE_SODIUM
   if (min != 0 || max > UINT32_MAX)
   {
     fprintf(stderr, "libsodium random currently only supports uniform random using 32-bit integer types\n");
